@@ -1,0 +1,8 @@
+@relation Test
+
+@attribute weekDay {'MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY','SUNDAY'}
+@attribute mealName {'Desayuno','Comida','Cena'}
+@attribute dishName {'Desayuno','Comida','Cena'}
+
+@data
+'WEDNESDAY','Cena',?
