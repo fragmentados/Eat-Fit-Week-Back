@@ -1,7 +1,12 @@
 package com.eliasfb.efw.service.impl;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,23 +100,55 @@ public class UserServiceImpl implements UserService {
 		// User Confs
 		user.setConfigurations(userConfMapper.toEntity(confsDto, id));
 		// User Meals
-		/*
-		 * List<Meal> mealsSentByFront =
-		 * this.mealMapper.mealDtoListToMealList(confsDto.getMeals()); List<Meal>
-		 * userMeals = user.getMeals(); if (mealsSentByFront != userMeals) { List<Meal>
-		 * mealsToUpdate = new ArrayList<>(); // We set the hours of the meals ordered
-		 * LocalDateTime hour = LocalDate.now().atStartOfDay(); for (Meal m :
-		 * mealsSentByFront) {
-		 * m.setHour(hour.format(DateTimeFormatter.ofPattern("HH"))); if
-		 * (userMeals.stream().anyMatch(userMeal ->
-		 * m.getName().equals(userMeal.getName()))) { this.mealRepository.save(m); }
-		 * else { m.setUser(user); mealsToUpdate.add(m); } hour = hour.plusHours(1); }
-		 * user.setMeals(mealsToUpdate); }
-		 */
+		List<Meal> mealsSentByFront = this.mealMapper.mealDtoListToMealList(confsDto.getMeals());
+		mealsSentByFront = setMealHoursByOrder(mealsSentByFront);
+		List<Meal> userMeals = user.getMeals();
+		userMeals = removeMealsNotSentByFront(userMeals, mealsSentByFront);
+		if (mealsSentByFront != userMeals) {
+			for (Meal m : mealsSentByFront) {
+				// Search user meals for the one sent -> Set the hour corresponding
+				Optional<Meal> userMealWithName = userMeals.stream().filter(um -> um.getName().equals(m.getName()))
+						.findFirst();
+				if (userMealWithName.isPresent()) {
+					Meal userMeal = userMealWithName.get();
+					if (!m.getHour().equals(userMeal.getHour())) {
+						Integer index = userMeals.indexOf(userMeal);
+						userMeal.setHour(m.getHour());
+						userMeals.set(index, userMeal);
+					}
+				} else {
+					// User doesn't have this meal, we add it
+					m.setUser(user);
+					userMeals.add(m);
+				}
+			}
+			user.setMeals(userMeals);
+		}
+
 		// Persist changes
 		user = repository.save(user);
 
 		return new ResponseDto(ResponseDto.OK_CODE, "User confs updated correctly");
+	}
+
+	private List<Meal> removeMealsNotSentByFront(List<Meal> userMeals, List<Meal> mealsSentByFront) {
+		List<Meal> userMealsToRemove = userMeals.stream()
+				.filter(um -> mealsSentByFront.stream().allMatch(mf -> !mf.getName().equals(um.getName())))
+				.collect(Collectors.toList());
+		userMealsToRemove.forEach(umr -> this.mealRepository.delete(umr));
+		userMeals.removeAll(userMealsToRemove);
+		return userMeals;
+	}
+
+	private List<Meal> setMealHoursByOrder(List<Meal> meals) {
+		LocalDateTime hour = LocalDate.now().atStartOfDay();
+		List<Meal> mealsWithHour = new ArrayList<>();
+		for (Meal m : meals) {
+			m.setHour(hour.format(DateTimeFormatter.ofPattern("HH")));
+			mealsWithHour.add(m);
+			hour = hour.plusHours(1);
+		}
+		return mealsWithHour;
 	}
 
 	@Override
