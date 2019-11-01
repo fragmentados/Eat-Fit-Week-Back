@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eliasfb.efw.dto.LoginDto;
@@ -30,8 +31,8 @@ public class UserController {
 	private UserService service;
 
 	@PostMapping
-	public User create(@RequestBody User user) {
-		return service.create(user);
+	public User create(@RequestBody User user, @RequestParam("defaultData") Boolean defaultData) {
+		return service.create(user, defaultData);
 	}
 
 	@GetMapping(path = { "/{id}" })

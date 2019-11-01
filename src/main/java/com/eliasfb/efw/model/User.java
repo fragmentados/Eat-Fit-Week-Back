@@ -25,8 +25,8 @@ import lombok.ToString;
 @Table(name = "user")
 @Data
 @NoArgsConstructor
-@ToString(exclude = { "menus", "ingredients", "configurations" })
-@EqualsAndHashCode(exclude = { "menus", "ingredients", "configurations" })
+@ToString(exclude = { "menus", "ingredients", "dishes", "configurations", "meals" })
+@EqualsAndHashCode(exclude = { "menus", "ingredients", "dishes", "configurations", "meals" })
 public class User {
 
 	@Id

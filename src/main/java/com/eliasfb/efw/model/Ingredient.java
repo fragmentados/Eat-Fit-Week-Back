@@ -1,5 +1,6 @@
 package com.eliasfb.efw.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -57,6 +58,19 @@ public class Ingredient {
 	public Ingredient(int id) {
 		super();
 		this.id = id;
+	}
+
+	public Ingredient(String name, double calories, double proteins, double fats, double carbohydrates,
+			FoodCategory category, User user) {
+		super();
+		this.name = name;
+		this.calories = calories;
+		this.proteins = proteins;
+		this.fats = fats;
+		this.carbohydrates = carbohydrates;
+		this.category = category;
+		this.users = new HashSet<User>();
+		this.users.add(user);
 	}
 
 }

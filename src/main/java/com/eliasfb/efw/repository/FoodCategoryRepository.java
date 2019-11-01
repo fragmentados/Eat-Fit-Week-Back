@@ -13,5 +13,7 @@ public interface FoodCategoryRepository extends Repository<FoodCategory, Integer
 	@Query("SELECT cat FROM FoodCategory cat WHERE cat.id IN :ids")
 	List<FoodCategory> findByIds(@Param("ids") List<Integer> ids);
 
+	FoodCategory findByName(String name);
+
 	List<FoodCategory> findAll();
 }

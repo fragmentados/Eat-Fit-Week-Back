@@ -59,10 +59,13 @@ public class UserServiceImpl implements UserService {
 	private MealRepository mealRepository;
 
 	@Override
-	public User create(User user) {
-		// Default Meals
+	public User create(User user, Boolean defaultData) {
+		// Default Meals and Ingredients
 		if (user != null) {
-			user.setMeals(this.userDataLoadService.getDefaultMeals(user));
+			user = this.userDataLoadService.loadDefaultMeals(user);
+			if (defaultData) {
+				user = this.userDataLoadService.loadDefaultData(user);
+			}
 		}
 
 		return repository.save(user);

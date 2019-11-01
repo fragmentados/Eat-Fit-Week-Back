@@ -14,7 +14,7 @@ public interface IngredientRepository extends Repository<Ingredient, Integer> {
 
 	List<Ingredient> findAll();
 
-	@Query("SELECT i FROM Ingredient i JOIN i.users u WHERE u.id = :userId")
+	@Query("SELECT i FROM Ingredient i JOIN i.users u WHERE u.id = :userId ORDER BY i.category")
 	List<Ingredient> findByUserId(@Param("userId") int userId);
 
 	@Query("SELECT i FROM Ingredient i JOIN i.users u WHERE u.id = :userId AND i.name = :ingrName")

@@ -11,7 +11,7 @@ import com.eliasfb.efw.model.User;
 
 public interface UserService {
 
-	User create(User user);
+	User create(User user, Boolean defaultData);
 
 	User delete(int id);
 
