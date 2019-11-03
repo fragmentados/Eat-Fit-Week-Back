@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.eliasfb.efw.dto.CreateOrUpdateIngredientDto;
 import com.eliasfb.efw.dto.IngredientDto;
@@ -34,6 +35,7 @@ public class IngredientServiceImpl implements IngredientService {
 	private IngredientToIngredientDtoMapper mapper;
 
 	@Override
+	@Transactional
 	public ResponseDto create(CreateOrUpdateIngredientDto createIngredient) {
 		ResponseDto response = new ResponseDto(ResponseDto.OK_CODE, "Ingredient created successfully");
 		List<Ingredient> ingredientWithSameName = this.repository.findByUserIdAndName(createIngredient.getUserId(),
@@ -42,7 +44,8 @@ public class IngredientServiceImpl implements IngredientService {
 			response = new ResponseDto(ResponseDto.UNIQUE_CONSTRAINT_CODE,
 					"There already exists an ingredient with that name for that user");
 		} else {
-			repository.save(mapper.createToEntity(createIngredient));
+			Ingredient ingredientCreated = repository.save(mapper.createToEntity(createIngredient));
+			response.setEntityId(ingredientCreated.getId());
 		}
 		return response;
 	}

@@ -18,5 +18,13 @@ public class ResponseDto implements Serializable {
 	public static final Integer UNIQUE_CONSTRAINT_CODE = -2;
 
 	private Integer errorCode;
+	private Integer entityId;
 	private String message;
+
+	public ResponseDto(Integer errorCode, String message) {
+		super();
+		this.errorCode = errorCode;
+		this.message = message;
+	}
+
 }

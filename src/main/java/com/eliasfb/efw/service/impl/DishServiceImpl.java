@@ -26,6 +26,7 @@ public class DishServiceImpl implements DishService {
 	private DishToDtoMapper mapper;
 
 	@Override
+	@Transactional
 	public ResponseDto create(CreateDishDto createDish) {
 		ResponseDto response = new ResponseDto(ResponseDto.OK_CODE, "Dish created successfully");
 		List<Dish> dishWithSameName = this.repository.findByUserAndByName(createDish.getUserId(), createDish.getName());
