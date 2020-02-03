@@ -22,7 +22,6 @@ import com.eliasfb.efw.dto.DishDto;
 import com.eliasfb.efw.dto.FillMenuFromTemplateDto;
 import com.eliasfb.efw.dto.MenuSpotFoundDto;
 import com.eliasfb.efw.dto.MlSuggestDishDto;
-import com.eliasfb.efw.dto.PriceEstimateDto;
 import com.eliasfb.efw.dto.ResponseDto;
 import com.eliasfb.efw.dto.UpdateDishOnMenuDto;
 import com.eliasfb.efw.dto.UserConfigurationsDto;
@@ -284,8 +283,8 @@ public class MenuServiceImpl implements MenuService {
 		List<ShoppingListItemDto> dtos = shoppingListItems.entrySet().stream()
 				.map(si -> new ShoppingListItemDto(si.getKey(), si.getValue().getUnit(), si.getValue().getQuantity()))
 				.collect(Collectors.toList());
-		PriceEstimateDto price = this.priceEstimate.estimateShoppingList(dtos);
-		return new ShoppingListDto(dtos, price);
+		dtos = this.priceEstimate.estimateShoppingList(dtos);
+		return new ShoppingListDto(dtos);
 	}
 
 	@Override

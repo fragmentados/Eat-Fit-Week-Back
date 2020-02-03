@@ -1,6 +1,7 @@
 package com.eliasfb.efw.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.eliasfb.efw.dto.CreateOrUpdateIngredientDto;
 import com.eliasfb.efw.dto.IngredientDto;
@@ -17,7 +18,9 @@ public interface IngredientService {
 
 	List<Ingredient> findAll();
 
-	List<IngredientDto> findUserIngredients(Integer userId);
+	List<IngredientDto> findUserIngredients(Integer userId, Boolean sortedByName);
+
+	Map<String, List<IngredientDto>> findUserIngredientMap(Integer userId);
 
 	IngredientDto findById(int id);
 

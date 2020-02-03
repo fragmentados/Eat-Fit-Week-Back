@@ -1,6 +1,7 @@
 package com.eliasfb.efw.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -60,7 +61,12 @@ public class IngredientController {
 	}
 
 	@GetMapping
-	public List<IngredientDto> findUserIngredients(@RequestParam(required = false) Integer userId) {
-		return service.findUserIngredients(userId);
+	public List<IngredientDto> findUserIngredients(@RequestParam(required = false) Integer userId, @RequestParam(required = false) Boolean sortedByName) {
+		return service.findUserIngredients(userId, sortedByName);
+	}
+
+	@GetMapping(path = "/map")
+	public Map<String, List<IngredientDto>> findUserIngredientMap(@RequestParam(required = false) Integer userId) {
+		return service.findUserIngredientMap(userId);
 	}
 }

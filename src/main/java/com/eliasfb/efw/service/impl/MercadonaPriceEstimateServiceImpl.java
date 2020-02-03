@@ -3,6 +3,7 @@ package com.eliasfb.efw.service.impl;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,6 @@ import java.util.Map.Entry;
 
 import org.springframework.stereotype.Service;
 
-import com.eliasfb.efw.dto.PriceEstimateDto;
 import com.eliasfb.efw.dto.menu.ShoppingListItemDto;
 import com.eliasfb.efw.service.PriceEstimateService;
 
@@ -18,8 +18,9 @@ import com.eliasfb.efw.service.PriceEstimateService;
 public class MercadonaPriceEstimateServiceImpl implements PriceEstimateService {
 
 	@Override
-	public PriceEstimateDto estimateShoppingList(List<ShoppingListItemDto> shoppingItems) {
-		PriceEstimateDto priceEstimate = new PriceEstimateDto();
+	public List<ShoppingListItemDto> estimateShoppingList(List<ShoppingListItemDto> shoppingItems) {
+		List<ShoppingListItemDto> shoppingItemsPriced = new ArrayList<>();
+		shoppingItemsPriced.addAll(shoppingItems);
 		try {
 			// We load the contents of the csv on a hashmap
 			Map<String, Double> pricesByName = new HashMap<>();
@@ -36,23 +37,20 @@ public class MercadonaPriceEstimateServiceImpl implements PriceEstimateService {
 			csvReader.close();
 
 			// Once we have the map, we cross it with the shopping list needs
-			priceEstimate = processResults(pricesByName, shoppingItems);
+			shoppingItemsPriced.stream()
+					.forEach(it -> {
+						Double price = findFirstPrice(pricesByName, it.getIngredientName()) * it.getUnits();
+						// We round each price to two decimals
+						price = Math.round(price * 100.0) / 100.0;
+						it.setPrice(price);
+					});
 
 		} catch (IOException exception) {
 			exception.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return priceEstimate;
-	}
-
-	private PriceEstimateDto processResults(Map<String, Double> pricesByName, List<ShoppingListItemDto> shoppingItems) {
-		// We get the total price summed of all the ingredients
-		Double priceSummed = shoppingItems.stream()
-				.mapToDouble(it -> findFirstPrice(pricesByName, it.getIngredientName()) * it.getUnits()).sum();
-		// We round that amount to two decimals
-		priceSummed = Math.round(priceSummed * 100.0) / 100.0;
-		return new PriceEstimateDto(priceSummed);
+		return shoppingItemsPriced;
 	}
 
 	private Double findFirstPrice(Map<String, Double> pricesByName, String name) {

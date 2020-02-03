@@ -14,4 +14,11 @@ public class ShoppingListItemDto implements Serializable {
 	private String ingredientName;
 	private Long units;
 	private Double quantity;
+	private Double price;
+
+	public ShoppingListItemDto(String ingredientName, Long units, Double quantity) {
+		this.ingredientName = ingredientName;
+		this.units = units;
+		this.quantity = quantity;
+	}
 }

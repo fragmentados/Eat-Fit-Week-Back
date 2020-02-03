@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.mapstruct.Mapper;
@@ -35,6 +36,11 @@ public abstract class IngredientToIngredientDtoMapper {
 			ingredient.setCategory(new FoodCategory(dto.getCategoryId()));
 		}
 		return ingredient;
+	}
+
+	public Map<String, List<IngredientDto>> ingredientToDtoMapIndexedByCategoryName(List<Ingredient> ingredient) {
+		return ingredient.stream().map(i -> this.toDto(i)).collect(
+				Collectors.groupingBy(i -> i.getCategory().getName(), Collectors.mapping(i -> i, Collectors.toList())));
 	}
 
 	public List<IngredientDto> ingredientToDtoList(List<Ingredient> ingredient) {

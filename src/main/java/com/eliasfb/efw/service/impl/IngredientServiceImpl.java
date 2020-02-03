@@ -1,6 +1,7 @@
 package com.eliasfb.efw.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,14 +66,29 @@ public class IngredientServiceImpl implements IngredientService {
 	}
 
 	@Override
-	public List<IngredientDto> findUserIngredients(Integer userId) {
+	public List<IngredientDto> findUserIngredients(Integer userId, Boolean sortedByName) {
+		List<Ingredient> ingredients;
+		if (userId != null) {
+			if (sortedByName!= null && sortedByName) {
+				ingredients = repository.findByUserIdSortedByName(userId);
+			} else {
+				ingredients = repository.findByUserId(userId);
+			}
+		} else {
+			ingredients = repository.findAll();
+		}
+		return mapper.ingredientToDtoList(ingredients);
+	}
+
+	@Override
+	public Map<String, List<IngredientDto>> findUserIngredientMap(Integer userId) {
 		List<Ingredient> ingredients;
 		if (userId != null) {
 			ingredients = repository.findByUserId(userId);
 		} else {
 			ingredients = repository.findAll();
 		}
-		return mapper.ingredientToDtoList(ingredients);
+		return mapper.ingredientToDtoMapIndexedByCategoryName(ingredients);
 	}
 
 	@Override
